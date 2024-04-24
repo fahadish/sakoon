@@ -15,6 +15,7 @@ import '../../widget/app_text_field.dart';
 import '../cartScreen/cart_screen.dart';
 import '../categoryScreen/add_product_screen.dart';
 import '../categoryScreen/listing_screen.dart';
+import '../orderHistory/order_history.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -75,7 +76,8 @@ class HomePage extends StatelessWidget {
               icon: Icon(Icons.history),
               color: Colors.white,
               onPressed: () {
-                // Implement according to your requirements
+
+AppNavigation.pushPage(context, OrderHistoryScreen());
               },
             ),
             IconButton(

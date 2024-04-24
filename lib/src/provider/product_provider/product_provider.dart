@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../components/orderHistory/order_history.dart';
 import '../../models/category_model/Category_model.dart';
 import 'package:path/path.dart';
 
@@ -11,6 +12,8 @@ class ProductProvider extends ChangeNotifier {
   late Database _database;
   List<ProductC> _products = [];
   Map<int, int> _selectedQuantities = {};
+  String? customerName;
+
 
   List<ProductC> get products => _products;
   List<ProductC> get selectedProducts => _products.where((product) => _selectedQuantities.containsKey(product.id) && _selectedQuantities[product.id]! > 0).toList();
@@ -156,4 +159,88 @@ class ProductProvider extends ChangeNotifier {
     }
     return total;
   }
+
+
+
+
+  // void printBill(BuildContext context) {
+  //   // Generate timestamp
+  //   DateTime now = DateTime.now();
+  //   String timestamp = "${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}";
+  //
+  //   // Store order data
+  //   List<Map<String, dynamic>> orderData = [];
+  //   for (var product in selectedProducts) {
+  //     final quantity = getSelectedQuantity(product.id);
+  //     orderData.add({
+  //       'productName': product.name,
+  //       'quantity': quantity,
+  //     });
+  //   }
+  //
+  //   // Navigate to the order history screen
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => OrderHistoryScreen(
+  //         customerName: customerName ?? 'Unknown', // Pass the customer's name
+  //         orderData: orderData,
+  //         timestamp: timestamp,
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void printBill(BuildContext context) {
+    // Generate timestamp
+    DateTime now = DateTime.now();
+    String timestamp = "${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}";
+
+    // Store order data
+    List<Map<String, dynamic>> orderData = [];
+    for (var product in selectedProducts) {
+      final quantity = getSelectedQuantity(product.id);
+      orderData.add({
+        'productName': product.name,
+        'quantity': quantity,
+      });
+    }
+
+    // Add order to order history
+    addOrderToHistory(orderData, timestamp);
+
+    // Navigate to the order history screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => OrderHistoryScreen()),
+    );
+  }
+
+
+  String? _customerName;
+  List<Map<String, dynamic>> _orderHistory = [];
+
+  List<Map<String, dynamic>> get orderHistory => _orderHistory;
+
+  // Method to set the customer's name
+  void setCustomerName(String name) {
+    _customerName = name;
+    notifyListeners();
+  }
+
+  // Method to add an order to the order history
+  void addOrderToHistory(List<Map<String, dynamic>> orderData, String timestamp) {
+    _orderHistory.add({
+      'customerName': _customerName ?? 'Unknown',
+      'orderData': orderData,
+      'timestamp': timestamp,
+    });
+    notifyListeners();
+  }
+
+
+
+
+
+
 }
